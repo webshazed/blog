@@ -4,11 +4,30 @@ const BASE_URL = process.env.SITE_URL || 'https://blog1-roan.vercel.app';
 
 export default async function sitemap() {
     // Fetch all data from Strapi
-    const [articles, categories, authors] = await Promise.all([
-        getAllArticles().catch(() => []),
-        getAllCategories().catch(() => []),
-        getAllAuthors().catch(() => []),
-    ]);
+    let articles = [];
+    let categories = [];
+    let authors = [];
+
+    try {
+        const articlesResult = await getAllArticles(1, 100); // Get up to 100 articles
+        articles = articlesResult?.articles || [];
+    } catch (e) {
+        console.error('Sitemap: Failed to fetch articles', e);
+    }
+
+    try {
+        const categoriesResult = await getAllCategories();
+        categories = Array.isArray(categoriesResult) ? categoriesResult : [];
+    } catch (e) {
+        console.error('Sitemap: Failed to fetch categories', e);
+    }
+
+    try {
+        const authorsResult = await getAllAuthors();
+        authors = Array.isArray(authorsResult) ? authorsResult : [];
+    } catch (e) {
+        console.error('Sitemap: Failed to fetch authors', e);
+    }
 
     // Static pages
     const staticPages = [
