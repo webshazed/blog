@@ -1,60 +1,99 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
 
+const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
+const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
+
+// GET: Fetch comments for a specific article slug
 export async function GET(request) {
-    const { searchParams } = new URL(request.url);
-    const slug = searchParams.get('slug');
-
-    if (!slug) {
-        return NextResponse.json({ error: 'Slug required' }, { status: 400 });
-    }
-
     try {
-        const post = await prisma.post.findUnique({
-            where: { slug },
-            include: {
-                comments: {
-                    orderBy: { createdAt: 'desc' }
-                }
-            }
-        });
+        const { searchParams } = new URL(request.url);
+        const slug = searchParams.get('slug');
 
-        if (!post) {
+        if (!slug) {
+            return NextResponse.json({ error: 'Missing slug parameter' }, { status: 400 });
+        }
+
+        const baseUrl = STRAPI_URL.replace(/\/$/, '');
+        const response = await fetch(
+            `${baseUrl}/api/comments?filters[articleSlug][$eq]=${encodeURIComponent(slug)}&filters[approved][$eq]=true&sort=createdAt:desc`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
+                },
+                cache: 'no-store', // Don't cache comments
+            }
+        );
+
+        if (!response.ok) {
+            console.error('Strapi fetch error:', response.status);
             return NextResponse.json({ comments: [] });
         }
 
-        return NextResponse.json({ comments: post.comments });
+        const data = await response.json();
+
+        // Format comments for frontend
+        const comments = (data.data || []).map(item => ({
+            id: item.id,
+            name: item.name,
+            content: item.content,
+            createdAt: item.createdAt,
+        }));
+
+        return NextResponse.json({ comments });
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 });
+        console.error('Error fetching comments:', error);
+        return NextResponse.json({ comments: [] });
     }
 }
 
+// POST: Create a new comment
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { slug, name, email, content } = body;
+        const { name, email, content, slug } = body;
 
-        if (!slug || !content || !name) {
-            return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+        if (!name || !content || !slug) {
+            return NextResponse.json(
+                { error: 'Missing required fields: name, content, slug' },
+                { status: 400 }
+            );
         }
 
-        const post = await prisma.post.findUnique({ where: { slug } });
-        if (!post) {
-            return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-        }
-
-        const comment = await prisma.comment.create({
-            data: {
-                content,
-                name,
-                email: email || 'anon@example.com',
-                postId: post.id
-            }
+        const baseUrl = STRAPI_URL.replace(/\/$/, '');
+        const response = await fetch(`${baseUrl}/api/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
+            },
+            body: JSON.stringify({
+                data: {
+                    name,
+                    email: email || '',
+                    content,
+                    articleSlug: slug,
+                    approved: true, // Auto-approve for now
+                }
+            }),
         });
 
-        return NextResponse.json(comment, { status: 201 });
+        if (!response.ok) {
+            const error = await response.text();
+            console.error('Strapi create error:', error);
+            return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });
+        }
+
+        const data = await response.json();
+
+        // Return the created comment
+        return NextResponse.json({
+            id: data.data.id,
+            name: data.data.name,
+            content: data.data.content,
+            createdAt: data.data.createdAt,
+        });
     } catch (error) {
-        console.error("Comment error:", error);
-        return NextResponse.json({ error: 'Failed to post comment' }, { status: 500 });
+        console.error('Error creating comment:', error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
