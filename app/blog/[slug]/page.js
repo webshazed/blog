@@ -55,10 +55,39 @@ export default async function BlogPost({ params }) {
     // Sidebar Data: Recent Posts (excluding current)
     const recentPosts = allPosts.filter(p => p.slug !== slug).slice(0, 4);
     // Mock Most Viewed (just shuffle or pick randoms for now, simplified to next 4)
+    // Mock Most Viewed (just shuffle or pick randoms for now, simplified to next 4)
     const mostViewedPosts = allPosts.filter(p => p.slug !== slug).sort(() => 0.5 - Math.random()).slice(0, 4);
+
+    // Generate Article Schema
+    const articleSchema = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": post.title,
+        "image": post.image ? [post.image] : [],
+        "datePublished": post.date ? new Date(post.date).toISOString() : new Date().toISOString(),
+        "dateModified": post.date ? new Date(post.date).toISOString() : new Date().toISOString(),
+        "author": [{
+            "@type": "Person",
+            "name": post.author || "Evergreen Team",
+            "url": post.authorSlug ? `https://blog1-roan.vercel.app/author/${post.authorSlug}` : undefined
+        }],
+        "publisher": {
+            "@type": "Organization",
+            "name": "Evergreen Blog",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://blog1-roan.vercel.app/logo.png" // Replace with actual logo if available
+            }
+        },
+        "description": post.excerpt || post.title
+    };
 
     return (
         <div className={`container ${styles.pageWrapper}`}>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+            />
 
             {/* Breadcrumbs */}
             <nav className={styles.breadcrumbs}>
