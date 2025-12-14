@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Author {
+  id      String @id @default(cuid())
+  name    String
+  email   String @unique
+  image   String?
+  bio     String?
+  posts   Post[]
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  posts Post[]
+}
+
+model Post {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  content      String?  @db.Text
+  image        String?
+  date         String   // Storing as string to match JSON format "Oct 28, 2024", or convert to DateTime
+  published    Boolean  @default(true)
+  views        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  authorId     String
+  author       Author   @relation(fields: [authorId], references: [id])
+
+  categoryId   String
+  category     Category @relation(fields: [categoryId], references: [id])
+
+  comments     Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  name      String
+  email     String
+  createdAt DateTime @default(now())
+  
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+}
