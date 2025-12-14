@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './Card.module.css';
 
 export default function Card({ post }) {
@@ -6,11 +7,15 @@ export default function Card({ post }) {
         <article className={styles.card}>
             <Link href={`/blog/${post.slug}`} className={styles.imageLink}>
                 {post.image ? (
-                    <img
-                        src={post.image}
-                        alt={post.image_alt || post.title}
-                        className={styles.image}
-                    />
+                    <div className={styles.imageWrapper}>
+                        <Image
+                            src={post.image}
+                            alt={post.image_alt || post.title}
+                            fill
+                            className={styles.image}
+                            sizes="(max-width: 768px) 100vw, 400px"
+                        />
+                    </div>
                 ) : (
                     <div className={styles.imagePlaceholder}>
                         <span>{post.category?.charAt(0) || 'E'}</span>
@@ -51,3 +56,4 @@ export default function Card({ post }) {
         </article>
     );
 }
+
