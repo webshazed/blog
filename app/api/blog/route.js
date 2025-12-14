@@ -72,7 +72,7 @@ export async function POST(request) {
             image_alt: generatedPost.featured_image_seo?.alt || generatedPost.title,
             image_title: generatedPost.featured_image_seo?.title || generatedPost.title,
             date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-            slug: generatedPost.slug || generatedPost.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `post-${Date.now()}`
+            slug: (generatedPost.slug || generatedPost.title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `post-${Date.now()}`
         };
 
         // 6. Save to Strapi CMS
