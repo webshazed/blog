@@ -86,8 +86,21 @@ export default async function BlogPost({ params }) {
     // Sidebar Data: Recent Posts (excluding current)
     const recentPosts = allPosts.filter(p => p.slug !== slug).slice(0, 4);
     // Mock Most Viewed (just shuffle or pick randoms for now, simplified to next 4)
-    // Mock Most Viewed (just shuffle or pick randoms for now, simplified to next 4)
     const mostViewedPosts = allPosts.filter(p => p.slug !== slug).sort(() => 0.5 - Math.random()).slice(0, 4);
+
+    // Calculate Reading Time (average 200 words per minute)
+    const wordCount = post.content ? post.content.replace(/<[^>]*>/g, '').split(/\s+/).length : 0;
+    const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+    // Extract TOC from H2 and H3 headings
+    const headingRegex = /<h([23])[^>]*(?:id="([^"]*)")?[^>]*>([^<]+)<\/h[23]>/gi;
+    const tocItems = [];
+    let match;
+    const contentWithIds = post.content ? post.content.replace(/<h([23])([^>]*)>([^<]+)<\/h([23])>/gi, (m, level, attrs, text) => {
+        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        tocItems.push({ level: parseInt(level), id, text: text.trim() });
+        return `<h${level}${attrs} id="${id}">${text}</h${level}>`;
+    }) : '';
 
     // Generate Article Schema
     const articleSchema = {
@@ -96,7 +109,7 @@ export default async function BlogPost({ params }) {
         "headline": post.title,
         "image": post.image ? [post.image] : [],
         "datePublished": post.date ? new Date(post.date).toISOString() : new Date().toISOString(),
-        "dateModified": post.date ? new Date(post.date).toISOString() : new Date().toISOString(),
+        "dateModified": post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date().toISOString(),
         "author": [{
             "@type": "Person",
             "name": post.author || "Evergreen Team",
@@ -107,17 +120,52 @@ export default async function BlogPost({ params }) {
             "name": "Evergreen Blog",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://blog1-roan.vercel.app/logo.png" // Replace with actual logo if available
+                "url": "https://blog1-roan.vercel.app/logo.png"
             }
         },
-        "description": post.excerpt || post.title
+        "description": post.excerpt || post.title,
+        "wordCount": wordCount,
+        "timeRequired": `PT${readingTime}M`
     };
+
+    // Generate Breadcrumb Schema
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://blog1-roan.vercel.app"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog",
+                "item": "https://blog1-roan.vercel.app/blog"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": post.category || "General",
+                "item": `https://blog1-roan.vercel.app/category/${post.categorySlug || 'general'}`
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "name": post.title
+            }
+        ]
+    };
+
+    const allSchemas = [articleSchema, breadcrumbSchema];
 
     return (
         <div className={`container ${styles.pageWrapper}`}>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(allSchemas) }}
             />
 
             {/* Breadcrumbs */}
@@ -148,16 +196,36 @@ export default async function BlogPost({ params }) {
                         )}
                         <h1 className={styles.title}>{post.title}</h1>
                         <div className={styles.metaDataRow}>
-                            <span>Published: {post.date}</span>
+                            <span>📅 Published: {post.date}</span>
+                            <span className={styles.separator}>|</span>
+                            <span>⏱️ {readingTime} min read</span>
                             <span className={styles.separator}>|</span>
                             <span>By {post.authorSlug ? (
                                 <Link href={`/author/${post.authorSlug}`} className={styles.authorLink}>{post.author}</Link>
                             ) : (
                                 <span className={styles.authorLink}>{post.author}</span>
                             )}</span>
+                            {post.updatedAt && post.updatedAt !== post.date && (
+                                <>
+                                    <span className={styles.separator}>|</span>
+                                    <span>🔄 Updated: {new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</span>
+                                </>
+                            )}
                         </div>
 
-                        {/* Social Placeholders */}
+                        {/* Table of Contents */}
+                        {tocItems.length > 2 && (
+                            <nav className={styles.toc}>
+                                <h4>📖 Table of Contents</h4>
+                                <ul>
+                                    {tocItems.map((item, i) => (
+                                        <li key={i} style={{ marginLeft: item.level === 3 ? '1rem' : 0 }}>
+                                            <a href={`#${item.id}`}>{item.text}</a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </nav>
+                        )}
                         <div className={styles.socialShare}>
                             <button className={styles.shareBtn} style={{ background: '#3b5998' }}>Share</button>
                             <button className={styles.shareBtn} style={{ background: '#000000' }}>X Tweet</button>
