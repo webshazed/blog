@@ -53,7 +53,11 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Failed to process AI request', details: e.message }, { status: 500 });
         }
 
+
         // 5. Merge Data & Process Images
+        // Localize images in content
+        let processedContent = await processContentImages(generatedPost.content, generatedPost.slug);
+
         // 5.5 Inject Smart Schemas & Advanced SEO
         let finalContent = processedContent;
 
