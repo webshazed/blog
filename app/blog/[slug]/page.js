@@ -20,6 +20,8 @@ function AdSlot({ code, fallback, className, style }) {
     );
 }
 
+const SITE_URL = process.env.SITE_URL || 'https://blog1-roan.vercel.app';
+
 export async function generateMetadata({ params }) {
     const { slug } = await params;
     const post = await getPostBySlug(slug);
@@ -30,9 +32,38 @@ export async function generateMetadata({ params }) {
         };
     }
 
+    const postUrl = `${SITE_URL}/blog/${slug}`;
+    const imageUrl = post.image || `${SITE_URL}/og-image.png`;
+
     return {
-        title: `${post.title} | Evergreen`,
-        description: post.excerpt,
+        title: post.title,
+        description: post.excerpt || post.title,
+        alternates: {
+            canonical: postUrl,
+        },
+        openGraph: {
+            type: 'article',
+            url: postUrl,
+            title: post.title,
+            description: post.excerpt || post.title,
+            images: [
+                {
+                    url: imageUrl,
+                    width: 1200,
+                    height: 630,
+                    alt: post.imageAlt || post.title,
+                },
+            ],
+            publishedTime: post.date || new Date().toISOString(),
+            authors: [post.author || 'Evergreen Team'],
+            section: post.category || 'General',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: post.title,
+            description: post.excerpt || post.title,
+            images: [imageUrl],
+        },
     };
 }
 

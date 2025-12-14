@@ -24,8 +24,8 @@ This is a verified test post to check if the Malicious Path error is resolved.
 The previous error "Malicious Path" should be gone now.
     `,
     title: `API Test Post ${timestamp}`,
-    author: "Evergreen Tester",
-    category: "Testing",
+    author: "shazed",
+    category: "seo",
     // Explicitly providing a clean slug to test
     slug: `api-test-post-${timestamp}`
 });
