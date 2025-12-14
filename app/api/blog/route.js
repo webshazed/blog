@@ -135,7 +135,7 @@ Return ONLY the raw JSON string.`,
         // FAQ Schema (if exists)
         let schemaList = [primarySchema];
         if (generatedPost.faq && generatedPost.faq.length > 0) {
-            // Generate JSON-LD
+            // Generate JSON-LD (always add schema for SEO)
             const faqSchema = {
                 "@context": "https://schema.org",
                 "@type": "FAQPage",
@@ -150,30 +150,34 @@ Return ONLY the raw JSON string.`,
             };
             schemaList.push(faqSchema);
 
-            // Generate Visible HTML
-            let faqHtml = `<div class="faq-section mt-8 mb-8 p-6 bg-gray-50 rounded-xl">
-                <h3 class="text-2xl font-bold mb-4">Frequently Asked Questions</h3>
-                <div class="space-y-4">`;
+            // Only inject visible FAQ HTML if not already in content
+            const contentHasFaq = finalContent.toLowerCase().includes('frequently asked questions') ||
+                finalContent.includes('faq-section') ||
+                finalContent.includes('class="faq"');
 
-            generatedPost.faq.forEach(item => {
-                faqHtml += `
-            <details class="group bg-white rounded-lg border border-gray-200 shadow-sm open:shadow-md transition-all">
-                <summary class="flex justify-between items-center cursor-pointer p-4 font-medium text-gray-800 list-none">
-                    <span>${item.question}</span>
-                    <span class="transition group-open:rotate-180">
-                        <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
-                    </span>
-                </summary>
-                <div class="text-gray-600 mt-0 px-4 pb-4">
-                    ${item.answer}
-                </div>
-            </details>`;
-            });
+            if (!contentHasFaq) {
+                let faqHtml = `<section class="faq-section">
+                    <h2 class="faq-title">❓ Frequently Asked Questions</h2>
+                    <div class="faq-list">`;
 
-            faqHtml += `</div></div>`;
+                generatedPost.faq.forEach((item, index) => {
+                    faqHtml += `
+                    <details class="faq-item" ${index === 0 ? 'open' : ''}>
+                        <summary class="faq-question">
+                            <span class="faq-question-text">${item.question}</span>
+                            <span class="faq-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                            </span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>${item.answer}</p>
+                        </div>
+                    </details>`;
+                });
 
-            // Append to content
-            finalContent += faqHtml;
+                faqHtml += `</div></section>`;
+                finalContent += faqHtml;
+            }
         }
 
         // Inject All Schemas
