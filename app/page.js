@@ -2,12 +2,17 @@ import styles from './page.module.css';
 import Card from '@/components/UI/Card';
 import { getAllPosts, getCategories, getFeaturedPosts } from '@/lib/data';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default async function Home() {
-  const posts = await getAllPosts(1, 6);
-  const categories = await getCategories();
-  const featuredPosts = await getFeaturedPosts(3);
+  // Parallel Data Fetching to avoid waterfalls
+  const [postsResults, categories, featuredPosts] = await Promise.all([
+    getAllPosts(1, 6),
+    getCategories(),
+    getFeaturedPosts(3)
+  ]);
 
+  const posts = postsResults.articles || []; // Handle object return structure
   const featuredPost = featuredPosts[0] || posts[0];
 
   return (
@@ -39,7 +44,16 @@ export default async function Home() {
           <div className={styles.featured}>
             <div className={styles.featuredImage}>
               {featuredPost.image ? (
-                <img src={featuredPost.image} alt={featuredPost.title} />
+                <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '300px' }}>
+                  <Image
+                    src={featuredPost.image}
+                    alt={featuredPost.title}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    priority
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
               ) : (
                 <div className={styles.imagePlaceholder}>
                   <span>Featured</span>
