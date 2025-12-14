@@ -3,10 +3,12 @@ import Image from 'next/image';
 import styles from './Card.module.css';
 
 export default function Card({ post }) {
+    const isValidImageUrl = post.image && post.image.startsWith('http');
+
     return (
         <article className={styles.card}>
             <Link href={`/blog/${post.slug}`} className={styles.imageLink}>
-                {post.image ? (
+                {isValidImageUrl ? (
                     <div className={styles.imageWrapper}>
                         <Image
                             src={post.image}

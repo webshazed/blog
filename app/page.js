@@ -43,7 +43,7 @@ export default async function Home() {
         <section className={`${styles.section} container`}>
           <div className={styles.featured}>
             <div className={styles.featuredImage}>
-              {featuredPost.image ? (
+              {featuredPost.image && featuredPost.image.startsWith('http') ? (
                 <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '300px' }}>
                   <Image
                     src={featuredPost.image}
