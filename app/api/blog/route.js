@@ -36,7 +36,7 @@ export async function POST(request) {
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({
             model: "gemini-2.5-flash",
-            systemInstruction: "You are an expert blog editor and SEO specialist. Your task is to take raw markdown content and format it into a structured JSON object for a modern, premium blog post. \n\nThe output MUST be a valid JSON object with the following fields:\n- title: A catchy, SEO-optimized title (max 60 chars).\n- slug: A URL-friendly slug (kebab-case).\n- excerpt: A compelling, SEO-optimized meta description (150-160 chars) analyzing the full content.\n- featured_image_seo: An object containing { \"alt\": \"...\", \"title\": \"...\" } for the main article image.\n- faq: An array of 3-5 relevant FAQ objects { \"question\": \"...\", \"answer\": \"...\" } derived from the content. \n- content: The full blog post valid HTML. \n\n**CRITICAL DESIGN INSTRUCTIONS**:\n1. **Tables**: You MUST use `<div class=\"table-container\"><table class=\"modern-table\">...</table></div>`.  The table should have a <thead> and <tbody>.\n2. **Comparisons**: If the content compares items (e.g. Pros/Cons, This vs That), use a grid structure: `<div class=\"comparison-grid\"><div class=\"card\"><h3>Item A</h3>...</div><div class=\"card\"><h3>Item B</h3>...</div></div>`.\n3. **Highlights**: For key takeaways or important notes, use `<div class=\"highlight-box\">...</div>`.\n4. **SEO Images**: For any images, you MUST generate both `alt` text (descriptive) AND `title` text (hover tooltip). Example: `<img src=\"...\" alt=\"Detailed description\" title=\"Keyword rich title\">`.\n5. **Style**: Check for readability. Keep paragraphs concise.\n\nDo not include any markdown formatting (like ```json) in the response, just the raw JSON string.",
+            systemInstruction: "You are an expert blog editor and SEO specialist. Your task is to take raw markdown content and format it into a structured JSON object for a modern, premium blog post. \n\nThe output MUST be a valid JSON object with the following fields:\n- title: A catchy, SEO-optimized title (max 60 chars).\n- slug: A URL-friendly slug (kebab-case).\n- excerpt: A compelling, SEO-optimized meta description (150-160 chars).\n- schemaType: Detect content type: 'Article', 'TechArticle', 'NewsArticle', 'HowTo', or 'Review'.\n- entities: Array of { \"name\": \"...\", \"url\": \"...\" } for known entities (Wikipedia/Wikidata).\n- speakableSummary: A concise 2-3 sentence summary suitable for voice assistants (Alexa/Siri).\n- featured_image_seo: { \"alt\": \"...\", \"title\": \"...\" }\n- faq: Array of relevant FAQ objects { \"question\": \"...\", \"answer\": \"...\" }.\n- content: The full blog post valid HTML. \n\n**CRITICAL DESIGN INSTRUCTIONS**:\n1. **Semantic HTML**: Use `<figure>`, `<figcaption>`, `<aside>`, `<time>` tags where appropriate.\n2. **Tables**: `<div class=\"table-container\"><table class=\"modern-table\">...</table></div>`.\n3. **Comparisons**: Grid structure `<div class=\"comparison-grid\">...</div>`.\n4. **Images**: Generate `alt` AND `title` attributes.\n5. **Style**: Concise paragraphs, modern formatting.\n\nReturn ONLY the raw JSON string.",
             generationConfig: {
                 responseMimeType: "application/json"
             }
@@ -54,10 +54,53 @@ export async function POST(request) {
         }
 
         // 5. Merge Data & Process Images
-        // Localize images in content
-        let processedContent = await processContentImages(generatedPost.content, generatedPost.slug);
+        // 5.5 Inject Smart Schemas & Advanced SEO
+        let finalContent = processedContent;
 
-        // 5.5 Inject FAQ Schema & HTML
+        // Base Schema (Article)
+        let primarySchema = {
+            "@context": "https://schema.org",
+            "@type": generatedPost.schemaType || "Article", // Smart Schema #1
+            "headline": generatedPost.title,
+            "image": generatedPost.image ? [generatedPost.image] : [],
+            "datePublished": new Date().toISOString(),
+            "dateModified": new Date().toISOString(),
+            "author": [{
+                "@type": "Person",
+                "name": generatedPost.author || "Evergreen Team"
+            }],
+            "publisher": {
+                "@type": "Organization",
+                "name": "Evergreen Blog",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://blog1-roan.vercel.app/logo.png"
+                }
+            },
+            "description": generatedPost.excerpt
+        };
+
+        // Entity Linking #2
+        if (generatedPost.entities && generatedPost.entities.length > 0) {
+            primarySchema.about = generatedPost.entities.map(entity => ({
+                "@type": "Thing",
+                "name": entity.name,
+                "sameAs": entity.url
+            }));
+        }
+
+        // Speakable Schema #3
+        if (generatedPost.speakableSummary) {
+            primarySchema.speakable = {
+                "@type": "SpeakableSpecification",
+                "cssSelector": ["#speakable-summary"] // We will wrap this below
+            };
+            // Inject speakable summary into content (hidden visually or styled)
+            finalContent = `<div id="speakable-summary" style="display:none;" aria-hidden="true">${generatedPost.speakableSummary}</div>` + finalContent;
+        }
+
+        // FAQ Schema (if exists)
+        let schemaList = [primarySchema];
         if (generatedPost.faq && generatedPost.faq.length > 0) {
             // Generate JSON-LD
             const faqSchema = {
@@ -72,8 +115,7 @@ export async function POST(request) {
                     }
                 }))
             };
-
-            const schemaScript = `<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>`;
+            schemaList.push(faqSchema);
 
             // Generate Visible HTML
             let faqHtml = `<div class="faq-section mt-8 mb-8 p-6 bg-gray-50 rounded-xl">
@@ -98,8 +140,12 @@ export async function POST(request) {
             faqHtml += `</div></div>`;
 
             // Append to content
-            processedContent += faqHtml + schemaScript;
+            finalContent += faqHtml;
         }
+
+        // Inject All Schemas
+        const schemaScript = `<script type="application/ld+json">${JSON.stringify(schemaList)}</script>`;
+        finalContent += schemaScript;
 
         // Handle Featured Image
         let finalImage = featured_image || generatedPost.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800';
@@ -109,7 +155,7 @@ export async function POST(request) {
 
         const finalPost = {
             ...generatedPost,
-            content: processedContent,
+            content: finalContent,
             category: category || generatedPost.category || 'General',
             author: author || generatedPost.author || 'Evergreen Team',
             image: finalImage,
