@@ -50,13 +50,14 @@ The output MUST be a valid JSON object with the following fields:
 - content: The full blog post valid HTML.
 
 **HEADING STRUCTURE RULES (CRITICAL FOR SEO)**:
-1. Use exactly ONE H1 tag - this should be the article title at the very top.
-2. Use H2 for ALL main sections (aim for 4-8 H2 sections per article).
-3. Use H3 ONLY as sub-sections within their parent H2 - never standalone.
-4. FAQs MUST be their own H2 section called "Frequently Asked Questions", NOT nested under "Conclusion" or "Final Thoughts".
-5. Include target keyword naturally in at least 2-3 H2 headings.
-6. Avoid generic headings like "Introduction" or "Conclusion" - make them descriptive.
-7. Never skip heading levels (no H1 → H3 directly).
+1. DO NOT include H1 in the content - it will be added separately from the title field.
+2. Start the content with H2 for the first main section.
+3. Use H2 for ALL main sections (aim for 4-8 H2 sections per article).
+4. Use H3 ONLY as sub-sections within their parent H2 - never standalone.
+5. FAQs MUST be their own H2 section called "Frequently Asked Questions", NOT nested under "Conclusion" or "Final Thoughts".
+6. Include target keyword naturally in at least 2-3 H2 headings.
+7. Avoid generic headings like "Introduction" or "Conclusion" - make them descriptive.
+8. Never skip heading levels (no H2 → H4 directly).
 
 **DESIGN INSTRUCTIONS**:
 1. **Semantic HTML**: Use \`<figure>\`, \`<figcaption>\`, \`<aside>\`, \`<time>\` tags where appropriate.
