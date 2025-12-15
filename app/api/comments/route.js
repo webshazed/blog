@@ -74,7 +74,7 @@ export async function POST(request) {
                 email: email || '',
                 content: content,
                 articleSlug: slug,
-                approved: true,
+                approved: false, // Requires manual approval in Strapi Admin
             }
         };
 
