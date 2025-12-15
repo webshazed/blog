@@ -27,7 +27,7 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Invalid JSON body', details: e.message }, { status: 400 });
         }
 
-        const { content, author, category, featured_image } = body;
+        const { content, author, category, featured_image, slug } = body;
 
         // 3. Validation
         if (!content) return NextResponse.json({ error: 'Missing required field: content' }, { status: 400 });
@@ -83,10 +83,16 @@ Return ONLY the raw JSON string.`,
             return NextResponse.json({ error: 'Failed to process AI request', details: e.message }, { status: 500 });
         }
 
+        // Use custom slug if provided, otherwise use AI-generated slug
+        const finalSlug = slug
+            ? slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+            : generatedPost.slug;
+
+        console.log(`Using slug: ${finalSlug} (custom: ${!!slug})`);
 
         // 5. Merge Data & Process Images
         // Localize images in content
-        let processedContent = await processContentImages(generatedPost.content, generatedPost.slug);
+        let processedContent = await processContentImages(generatedPost.content, finalSlug);
 
         // 5.5 Inject Smart Schemas & Advanced SEO
         let finalContent = processedContent;
@@ -188,7 +194,7 @@ Return ONLY the raw JSON string.`,
         // Handle Featured Image
         let finalImage = featured_image || generatedPost.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800';
         if (featured_image) {
-            finalImage = await downloadImage(featured_image, generatedPost.slug, 'featured');
+            finalImage = await downloadImage(featured_image, finalSlug, 'featured');
         }
 
         const finalPost = {
@@ -200,7 +206,7 @@ Return ONLY the raw JSON string.`,
             image_alt: generatedPost.featured_image_seo?.alt || generatedPost.title,
             image_title: generatedPost.featured_image_seo?.title || generatedPost.title,
             date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-            slug: (generatedPost.slug || generatedPost.title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `post-${Date.now()}`
+            slug: finalSlug || `post-${Date.now()}`
         };
 
         // 6. Save to Strapi CMS
