@@ -3,30 +3,6 @@ import { NextResponse } from 'next/server';
 const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
-/**
- * Helper to get article document ID from slug
- */
-async function getArticleDocumentId(slug) {
-    const baseUrl = STRAPI_URL.replace(/\/$/, '');
-    const response = await fetch(
-        `${baseUrl}/api/articles?filters[slug][$eq]=${encodeURIComponent(slug)}&fields[0]=documentId`,
-        {
-            headers: {
-                'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
-            },
-        }
-    );
-
-    if (!response.ok) return null;
-
-    const data = await response.json();
-    if (data.data && data.data.length > 0) {
-        // Strapi v5 uses documentId, v4 uses id
-        return data.data[0].documentId || data.data[0].id;
-    }
-    return null;
-}
-
 // GET: Fetch comments for a specific article slug
 export async function GET(request) {
     try {
@@ -37,69 +13,38 @@ export async function GET(request) {
             return NextResponse.json({ error: 'Missing slug parameter' }, { status: 400 });
         }
 
-        // Get article document ID from slug
-        const documentId = await getArticleDocumentId(slug);
-
-        if (!documentId) {
-            console.log(`[Comments] Article not found for slug: ${slug}`);
-            return NextResponse.json({ comments: [] });
-        }
-
         const baseUrl = STRAPI_URL.replace(/\/$/, '');
+        const apiUrl = `${baseUrl}/api/comments?filters[articleSlug][$eq]=${encodeURIComponent(slug)}&filters[approved][$eq]=true&sort=createdAt:desc`;
 
-        // Try strapi-plugin-comments endpoint first
-        let response = await fetch(
-            `${baseUrl}/api/comments/api::article.article/${documentId}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
-                },
-                cache: 'no-store',
-            }
-        );
+        console.log(`[Comments] Fetching: ${apiUrl}`);
 
-        // Fallback to custom Comment content type if plugin not found
-        if (!response.ok) {
-            console.log('[Comments] Plugin endpoint failed, trying custom content type...');
-            response = await fetch(
-                `${baseUrl}/api/comments?filters[articleSlug][$eq]=${encodeURIComponent(slug)}&filters[approved][$eq]=true&sort=createdAt:desc`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
-                    },
-                    cache: 'no-store',
-                }
-            );
-        }
+        const response = await fetch(apiUrl, {
+            headers: {
+                'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
+            },
+            cache: 'no-store',
+        });
+
+        console.log(`[Comments] Response status: ${response.status}`);
 
         if (!response.ok) {
-            console.error('[Comments] Both endpoints failed:', response.status);
+            const errorText = await response.text();
+            console.error('[Comments] Fetch error:', errorText);
             return NextResponse.json({ comments: [] });
         }
 
         const data = await response.json();
+        console.log(`[Comments] Raw response: ${JSON.stringify(data).substring(0, 500)}`);
 
-        // Format comments for frontend (handle both plugin and custom formats)
-        let comments = [];
+        // Strapi v5 response format: { data: [ { id, documentId, name, content, ... } ] }
+        const comments = (data.data || []).map(item => ({
+            id: item.id || item.documentId,
+            name: item.name || 'Anonymous',
+            content: item.content || '',
+            createdAt: item.createdAt,
+        }));
 
-        if (data.data && Array.isArray(data.data)) {
-            // Plugin format or custom content type
-            comments = data.data.map(item => ({
-                id: item.id,
-                name: item.author?.name || item.authorName || item.name || 'Anonymous',
-                content: item.content || item.message || '',
-                createdAt: item.createdAt,
-            }));
-        } else if (Array.isArray(data)) {
-            // Direct array from plugin
-            comments = data.map(item => ({
-                id: item.id,
-                name: item.author?.name || item.authorName || 'Anonymous',
-                content: item.content || item.message || '',
-                createdAt: item.createdAt,
-            }));
-        }
-
+        console.log(`[Comments] Returning ${comments.length} comments`);
         return NextResponse.json({ comments });
     } catch (error) {
         console.error('[Comments] Error fetching:', error);
@@ -120,69 +65,48 @@ export async function POST(request) {
             );
         }
 
-        // Get article document ID from slug
-        const documentId = await getArticleDocumentId(slug);
-
-        if (!documentId) {
-            return NextResponse.json({ error: 'Article not found' }, { status: 404 });
-        }
-
         const baseUrl = STRAPI_URL.replace(/\/$/, '');
+        const apiUrl = `${baseUrl}/api/comments`;
 
-        // Try strapi-plugin-comments endpoint first
-        let response = await fetch(
-            `${baseUrl}/api/comments/api::article.article/${documentId}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
-                },
-                body: JSON.stringify({
-                    author: {
-                        name: name,
-                        email: email || '',
-                    },
-                    content: content,
-                }),
+        const payload = {
+            data: {
+                name: name,
+                email: email || '',
+                content: content,
+                articleSlug: slug,
+                approved: true,
             }
-        );
+        };
 
-        // Fallback to custom Comment content type
-        if (!response.ok) {
-            console.log('[Comments] Plugin POST failed, trying custom content type...');
-            response = await fetch(`${baseUrl}/api/comments`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
-                },
-                body: JSON.stringify({
-                    data: {
-                        name,
-                        email: email || '',
-                        content,
-                        articleSlug: slug,
-                        approved: true,
-                    }
-                }),
-            });
-        }
+        console.log(`[Comments] Creating at: ${apiUrl}`);
+        console.log(`[Comments] Payload: ${JSON.stringify(payload)}`);
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${STRAPI_API_TOKEN}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        console.log(`[Comments] POST Response status: ${response.status}`);
 
         if (!response.ok) {
-            const error = await response.text();
-            console.error('[Comments] Create error:', error);
-            return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });
+            const errorText = await response.text();
+            console.error('[Comments] Create error:', errorText);
+            return NextResponse.json({ error: 'Failed to create comment', details: errorText }, { status: 500 });
         }
 
         const data = await response.json();
+        console.log(`[Comments] Created: ${JSON.stringify(data).substring(0, 300)}`);
 
         // Return the created comment
         const newComment = data.data || data;
         return NextResponse.json({
-            id: newComment.id,
-            name: newComment.author?.name || newComment.name || name,
-            content: newComment.content || newComment.message || content,
+            id: newComment.id || newComment.documentId,
+            name: newComment.name || name,
+            content: newComment.content || content,
             createdAt: newComment.createdAt || new Date().toISOString(),
         });
     } catch (error) {
@@ -190,4 +114,3 @@ export async function POST(request) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
-
