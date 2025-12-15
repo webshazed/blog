@@ -1,0 +1,37 @@
+.content {
+    line-height: 1.8;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+/* Inherit article content styles */
+.content h2,
+.content h3,
+.content h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.content p {
+    margin-bottom: 1.25rem;
+}
+
+.content img {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    margin: 1.5rem 0;
+}
+
+.content ul,
+.content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+
+.content blockquote {
+    border-left: 4px solid var(--accent);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--subtle);
+}

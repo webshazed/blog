@@ -1,8 +1,10 @@
 import { getPostBySlug, getAllPosts } from '@/lib/data';
+import { getAdSettings } from '@/lib/strapi';
 import styles from './BlogPost.module.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Comments from '@/components/Comments';
+import ArticleContent from '@/components/ArticleContent';
 
 // Ad Slot Component - renders ad code from Strapi
 function AdSlot({ code, fallback, className, style }) {
@@ -76,8 +78,11 @@ export async function generateStaticParams() {
 
 export default async function BlogPost({ params }) {
     const { slug } = await params;
-    const post = await getPostBySlug(slug);
-    const allPosts = await getAllPosts();
+    const [post, allPosts, adSettings] = await Promise.all([
+        getPostBySlug(slug),
+        getAllPosts(),
+        getAdSettings(),
+    ]);
 
     if (!post) {
         notFound();
@@ -249,15 +254,11 @@ export default async function BlogPost({ params }) {
                     )}
 
                     <div className={styles.content}>
-                        {/* Middle Ad Slot - inserted before content */}
-                        {post.enableAds !== false && post.adCodeMiddle && (
-                            <AdSlot
-                                code={post.adCodeMiddle}
-                                className={styles.adSlot}
-                            />
-                        )}
-
-                        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                        {/* Article Content with Auto-Injected Ads */}
+                        <ArticleContent
+                            htmlContent={contentWithIds || post.content}
+                            adSettings={adSettings}
+                        />
 
                         <Link href="/" className={styles.backLink}>
                             &larr; Back to Home
