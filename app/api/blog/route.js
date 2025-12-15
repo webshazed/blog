@@ -31,6 +31,7 @@ export async function POST(request) {
 
         // 3. Validation
         if (!content) return NextResponse.json({ error: 'Missing required field: content' }, { status: 400 });
+        if (!slug) return NextResponse.json({ error: 'Missing required field: slug' }, { status: 400 });
 
         // 4. Call Google Gemini AI
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
@@ -40,7 +41,6 @@ export async function POST(request) {
 
 The output MUST be a valid JSON object with the following fields:
 - title: A catchy, SEO-optimized title (max 60 chars).
-- slug: A URL-friendly slug (kebab-case).
 - excerpt: A compelling, SEO-optimized meta description (150-160 chars).
 - schemaType: Detect content type: 'Article', 'TechArticle', 'NewsArticle', 'HowTo', or 'Review'.
 - entities: Array of { "name": "...", "url": "..." } for known entities (Wikipedia/Wikidata).
@@ -83,12 +83,10 @@ Return ONLY the raw JSON string.`,
             return NextResponse.json({ error: 'Failed to process AI request', details: e.message }, { status: 500 });
         }
 
-        // Use custom slug if provided, otherwise use AI-generated slug
-        const finalSlug = slug
-            ? slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-            : generatedPost.slug;
+        // Sanitize the required slug
+        const finalSlug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-        console.log(`Using slug: ${finalSlug} (custom: ${!!slug})`);
+        console.log(`Using slug: ${finalSlug}`);
 
         // 5. Merge Data & Process Images
         // Localize images in content
