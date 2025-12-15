@@ -1,5 +1,7 @@
 import './globals.css';
 import { Outfit, Merriweather } from 'next/font/google';
+import { getSiteSettings } from '@/lib/strapi';
+import TrackingScripts from '@/components/TrackingScripts';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -72,14 +74,37 @@ export const metadata = {
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // Fetch site settings (tracking codes, etc.)
+  const siteSettings = await getSiteSettings();
+
   return (
     <html lang="en" className={`${outfit.variable} ${merriweather.variable}`}>
+      <head>
+        {/* Google Search Console Verification */}
+        {siteSettings?.googleSearchConsoleCode && (
+          <meta name="google-site-verification" content={siteSettings.googleSearchConsoleCode} />
+        )}
+
+        {/* Bing Webmaster Verification */}
+        {siteSettings?.bingVerificationCode && (
+          <meta name="msvalidate.01" content={siteSettings.bingVerificationCode} />
+        )}
+
+        {/* Custom Head Code */}
+        {siteSettings?.customHeadCode && (
+          <div dangerouslySetInnerHTML={{ __html: siteSettings.customHeadCode }} />
+        )}
+      </head>
       <body>
         <Header />
         <main>{children}</main>
         <Footer />
+
+        {/* Tracking Scripts (GA, Pixel, AdSense) */}
+        <TrackingScripts settings={siteSettings} />
       </body>
     </html>
   );
 }
+
