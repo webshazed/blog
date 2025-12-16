@@ -49,6 +49,12 @@ The output MUST be a valid JSON object with the following fields:
 - faq: Array of relevant FAQ objects { "question": "...", "answer": "..." }.
 - content: The full blog post valid HTML.
 
+**CRITICAL IMAGE RULES**:
+1. PRESERVE all image paths EXACTLY as they appear in the input. Do NOT modify, rename, or generate new paths.
+2. If the input has ![text](X:\\BLOG\\public\\Posts\\image_0.png), keep that EXACT path in the output HTML as <img src="X:\\BLOG\\public\\Posts\\image_0.png">.
+3. NEVER create new image paths like /images/... - only use paths from the input.
+4. Add alt and title attributes based on context, but keep src path unchanged.
+
 **HEADING STRUCTURE RULES (CRITICAL FOR SEO)**:
 1. DO NOT include H1 in the content - it will be added separately from the title field.
 2. Start the content with H2 for the first main section.
@@ -63,8 +69,7 @@ The output MUST be a valid JSON object with the following fields:
 1. **Semantic HTML**: Use \`<figure>\`, \`<figcaption>\`, \`<aside>\`, \`<time>\` tags where appropriate.
 2. **Tables**: \`<div class="table-container"><table class="modern-table">...</table></div>\`.
 3. **Comparisons**: Grid structure \`<div class="comparison-grid">...</div>\`.
-4. **Images**: Generate \`alt\` AND \`title\` attributes.
-5. **Style**: Concise paragraphs, modern formatting.
+4. **Style**: Concise paragraphs, modern formatting.
 
 Return ONLY the raw JSON string.`,
             generationConfig: {
