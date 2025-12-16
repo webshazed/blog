@@ -33,7 +33,18 @@ export async function POST(request) {
         if (!content) return NextResponse.json({ error: 'Missing required field: content' }, { status: 400 });
         if (!slug) return NextResponse.json({ error: 'Missing required field: slug' }, { status: 400 });
 
-        // 4. Call Google Gemini AI
+        // Generate slug early - needed for image filenames
+        const finalSlug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        console.log(`Using slug: ${finalSlug}`);
+
+        // 4. PROCESS IMAGES FIRST (before AI)
+        // This uploads all local images to R2 and replaces paths with R2 URLs
+        console.log('--- Step 4: Processing images BEFORE AI ---');
+        let contentWithR2Images = await processContentImages(content, finalSlug);
+        console.log('Images processed, R2 URLs inserted');
+
+        // 5. Call Google Gemini AI with R2-linked content
+        console.log('--- Step 5: Sending to Gemini AI ---');
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({
             model: "gemini-2.5-flash",
@@ -50,10 +61,10 @@ The output MUST be a valid JSON object with the following fields:
 - content: The full blog post valid HTML.
 
 **CRITICAL IMAGE RULES**:
-1. PRESERVE all image paths EXACTLY as they appear in the input. Do NOT modify, rename, or generate new paths.
-2. If the input has ![text](X:\\BLOG\\public\\Posts\\image_0.png), keep that EXACT path in the output HTML as <img src="X:\\BLOG\\public\\Posts\\image_0.png">.
-3. NEVER create new image paths like /images/... - only use paths from the input.
-4. Add alt and title attributes based on context, but keep src path unchanged.
+1. PRESERVE all image URLs EXACTLY as they appear in the input. The images have already been processed and have valid URLs.
+2. Do NOT modify, rename, or generate new image paths.
+3. Keep all src attributes exactly as provided.
+4. Add alt and title attributes based on context, but keep src unchanged.
 
 **HEADING STRUCTURE RULES (CRITICAL FOR SEO)**:
 1. DO NOT include H1 in the content - it will be added separately from the title field.
@@ -79,26 +90,17 @@ Return ONLY the raw JSON string.`,
 
         let generatedPost;
         try {
-            const result = await model.generateContent(content);
+            const result = await model.generateContent(contentWithR2Images);
             const responseText = result.response.text();
-            console.log("Gemini Response:", responseText);
+            console.log("Gemini Response received");
             generatedPost = JSON.parse(responseText);
         } catch (e) {
             console.error("Gemini Error:", e);
             return NextResponse.json({ error: 'Failed to process AI request', details: e.message }, { status: 500 });
         }
 
-        // Sanitize the required slug
-        const finalSlug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
-        console.log(`Using slug: ${finalSlug}`);
-
-        // 5. Merge Data & Process Images
-        // Localize images in content
-        let processedContent = await processContentImages(generatedPost.content, finalSlug);
-
-        // 5.5 Inject Smart Schemas & Advanced SEO
-        let finalContent = processedContent;
+        // 6. The content from AI should already have R2 URLs
+        let finalContent = generatedPost.content;
 
         // Base Schema (Article)
         let primarySchema = {
