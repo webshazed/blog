@@ -34,7 +34,7 @@ export async function POST(request) {
         if (!slug) return NextResponse.json({ error: 'Missing required field: slug' }, { status: 400 });
 
         // Generate slug early - needed for image filenames
-        const finalSlug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const finalSlug = String(slug).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         console.log(`Using slug: ${finalSlug}`);
 
         // 4. PROCESS IMAGES FIRST (before AI)
