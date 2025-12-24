@@ -1,43 +1,50 @@
 :root {
-  /* Color Palette - Evergreen & Modern */
+  /* Color Palette - Kitchen Algo Branding */
   --background: #ffffff;
-  /* Pure White */
   --surface: #ffffff;
-  --foreground: #0d1210;
-  /* Almost Black (High Contrast) */
+  --foreground: #2d3436;
+  /* Dark Charcoal Text */
 
-  --primary: #1e3a2f;
-  /* Deep Forest Green (Darker) */
-  --primary-light: #36604e;
-  --secondary: #f0f4f2;
-  /* Light Mist */
+  --primary: #2c2c2c;
+  /* Brand Charcoal */
+  --primary-light: #4a4a4a;
+  --secondary: #fdf2e9;
+  /* Very Light Orange Tint */
 
-  --accent: #b08d55;
-  /* Darker Gold for visibility */
-  --accent-hover: #967642;
+  --accent: #e67e22;
+  /* Brand Orange */
+  --accent-hover: #d35400;
 
-  --border: #d1d5db;
-  /* Higher contrast border */
-  --subtle: #4b5563;
-  /* Dark Gray (WCAG AA Compliant on white) */
+  --border: #e0e0e0;
+  --subtle: #636e72;
 
   /* Typography */
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Merriweather', serif;
+  --font-heading: var(--font-open-sans), sans-serif;
+  --font-body: var(--font-open-sans), sans-serif;
+
+  /* Glassmorphism & Effects */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --backdrop-blur: 12px;
+
+  --glow-orange: 0 0 20px rgba(230, 126, 34, 0.3);
+  --glow-white: 0 0 20px rgba(255, 255, 255, 0.5);
 
   /* Spacing & Radii */
   --radius-sm: 8px;
   --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-lg: 32px;
+  --radius-xl: 48px;
 
   --container-width: 1200px;
   --header-height: 80px;
 
-  /* Shadows */
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-  /* Slightly stronger */
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  /* Premium Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02), 0 1px 0 rgba(0, 0, 0, 0.01);
+  --shadow-md: 0 12px 24px -6px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 32px 64px -16px rgba(0, 0, 0, 0.12), 0 16px 32px -8px rgba(0, 0, 0, 0.08);
+  --shadow-button: 0 10px 20px -5px rgba(230, 126, 34, 0.4);
 }
 
 /* Dark mode disabled to enforce white theme */
@@ -138,7 +145,7 @@ button {
 .faq-section {
   margin: 3rem 0;
   padding: 2.5rem;
-  background: linear-gradient(135deg, #f8faf9 0%, #e8f0ec 100%);
+  background: linear-gradient(135deg, #fff9f5 0%, #fdf2e9 100%);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
 }
@@ -168,13 +175,13 @@ button {
 }
 
 .faq-item:hover {
-  border-color: var(--primary-light);
+  border-color: var(--accent);
   box-shadow: var(--shadow-md);
 }
 
 .faq-item[open] {
-  border-color: var(--primary);
-  box-shadow: 0 8px 25px -5px rgba(30, 58, 47, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 8px 25px -5px rgba(230, 126, 34, 0.15);
 }
 
 .faq-question {
@@ -196,7 +203,7 @@ button {
 }
 
 .faq-question:hover {
-  background: #f8faf9;
+  background: #fff9f5;
 }
 
 .faq-question-text {

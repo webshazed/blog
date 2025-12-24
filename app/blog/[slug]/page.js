@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Comments from '@/components/Comments';
 import ArticleContent from '@/components/ArticleContent';
+import SocialShare from '@/components/Blog/SocialShare';
 
 // Ad Slot Component - renders ad code from Strapi
 function AdSlot({ code, fallback, className, style }) {
@@ -97,10 +98,18 @@ export default async function BlogPost({ params }) {
     const wordCount = post.content ? post.content.replace(/<[^>]*>/g, '').split(/\s+/).length : 0;
     const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
+    // YMYL Detection (Nutrition, Health, Science)
+    const ymylKeywords = ['nutrition', 'health', 'science', 'diet', 'medical', 'wellness'];
+    const lowerCategorySlug = post.categorySlug?.toLowerCase() || '';
+    const isYmyl = ymylKeywords.some(keyword => lowerCategorySlug.includes(keyword));
+
+    // Recipe Detection for Schema
+    const hasIngredients = post.content?.toLowerCase().includes('ingredients');
+    const hasInstructions = post.content?.toLowerCase().includes('instructions') || post.content?.toLowerCase().includes('directions');
+
     // Extract TOC from H2 and H3 headings
     const headingRegex = /<h([23])[^>]*(?:id="([^"]*)")?[^>]*>([^<]+)<\/h[23]>/gi;
     const tocItems = [];
-    let match;
     const contentWithIds = post.content ? post.content.replace(/<h([23])([^>]*)>([^<]+)<\/h([23])>/gi, (m, level, attrs, text) => {
         const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         tocItems.push({ level: parseInt(level), id, text: text.trim() });
@@ -117,21 +126,40 @@ export default async function BlogPost({ params }) {
         "dateModified": post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date().toISOString(),
         "author": [{
             "@type": "Person",
-            "name": post.author || "Evergreen Team",
-            "url": post.authorSlug ? `https://blog1-roan.vercel.app/author/${post.authorSlug}` : undefined
+            "name": post.author || "Kitchen Algo Team",
+            "url": post.authorSlug ? `${SITE_URL}/author/${post.authorSlug}` : undefined
         }],
         "publisher": {
             "@type": "Organization",
-            "name": "Evergreen Blog",
+            "name": "Kitchen Algo",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://blog1-roan.vercel.app/logo.png"
+                "url": `${SITE_URL}/logo.png`
             }
         },
         "description": post.excerpt || post.title,
         "wordCount": wordCount,
         "timeRequired": `PT${readingTime}M`
     };
+
+    // Generate Recipe Schema if applicable
+    let recipeSchema = null;
+    if (hasIngredients && hasInstructions) {
+        recipeSchema = {
+            "@context": "https://schema.org",
+            "@type": "Recipe",
+            "name": post.title,
+            "image": post.image ? [post.image] : [],
+            "author": {
+                "@type": "Person",
+                "name": post.author || "Kitchen Algo Team"
+            },
+            "datePublished": post.date ? new Date(post.date).toISOString() : new Date().toISOString(),
+            "description": post.excerpt || post.title,
+            "recipeCategory": post.category || "General",
+            "keywords": "recipe, kitchen algo, cooking"
+        };
+    }
 
     // Generate Breadcrumb Schema
     const breadcrumbSchema = {
@@ -142,19 +170,19 @@ export default async function BlogPost({ params }) {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://blog1-roan.vercel.app"
+                "item": SITE_URL
             },
             {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Blog",
-                "item": "https://blog1-roan.vercel.app/blog"
+                "item": `${SITE_URL}/blog`
             },
             {
                 "@type": "ListItem",
                 "position": 3,
                 "name": post.category || "General",
-                "item": `https://blog1-roan.vercel.app/category/${post.categorySlug || 'general'}`
+                "item": `${SITE_URL}/category/${post.categorySlug || 'general'}`
             },
             {
                 "@type": "ListItem",
@@ -165,6 +193,7 @@ export default async function BlogPost({ params }) {
     };
 
     const allSchemas = [articleSchema, breadcrumbSchema];
+    if (recipeSchema) allSchemas.push(recipeSchema);
 
     return (
         <div className={`container ${styles.pageWrapper}`}>
@@ -205,11 +234,21 @@ export default async function BlogPost({ params }) {
                             <span className={styles.separator}>|</span>
                             <span>⏱️ {readingTime} min read</span>
                             <span className={styles.separator}>|</span>
-                            <span>By {post.authorSlug ? (
-                                <Link href={`/author/${post.authorSlug}`} className={styles.authorLink}>{post.author}</Link>
-                            ) : (
-                                <span className={styles.authorLink}>{post.author}</span>
-                            )}</span>
+                            <span className={styles.metaAuthorSection}>
+                                <span className={styles.metaLabel}>By</span>
+                                <div className={styles.metaAvatar}>
+                                    {post.authorAvatar ? (
+                                        <img src={post.authorAvatar} alt={post.author} />
+                                    ) : (
+                                        <span>{post.author?.charAt(0) || 'K'}</span>
+                                    )}
+                                </div>
+                                {post.authorSlug ? (
+                                    <Link href={`/author/${post.authorSlug}`} className={styles.authorLink}>{post.author}</Link>
+                                ) : (
+                                    <span className={styles.authorLink}>{post.author}</span>
+                                )}
+                            </span>
                             {post.updatedAt && post.updatedAt !== post.date && (
                                 <>
                                     <span className={styles.separator}>|</span>
@@ -220,22 +259,25 @@ export default async function BlogPost({ params }) {
 
                         {/* Table of Contents */}
                         {tocItems.length > 2 && (
-                            <nav className={styles.toc}>
-                                <h4>📖 Table of Contents</h4>
-                                <ul>
+                            <details className={styles.toc} open={false}>
+                                <summary className={styles.tocSummary}>
+                                    <h4 className={styles.tocTitle}>📖 Table of Contents</h4>
+                                    <span className={styles.tocIcon}></span>
+                                </summary>
+                                <ul className={styles.tocList}>
                                     {tocItems.map((item, i) => (
-                                        <li key={i} style={{ marginLeft: item.level === 3 ? '1rem' : 0 }}>
+                                        <li key={i} className={item.level === 3 ? styles.tocChild : styles.tocParent}>
                                             <a href={`#${item.id}`}>{item.text}</a>
                                         </li>
                                     ))}
                                 </ul>
-                            </nav>
+                            </details>
                         )}
-                        <div className={styles.socialShare}>
-                            <button className={styles.shareBtn} style={{ background: '#3b5998' }}>Share</button>
-                            <button className={styles.shareBtn} style={{ background: '#000000' }}>X Tweet</button>
-                            <button className={styles.shareBtn} style={{ background: '#bd081c' }}>Pin</button>
-                        </div>
+                        <SocialShare
+                            url={`${SITE_URL}/blog/${slug}`}
+                            title={post.title}
+                            image={post.image}
+                        />
                     </header>
 
                     {/* Top Ad Slot */}
@@ -254,6 +296,17 @@ export default async function BlogPost({ params }) {
                     )}
 
                     <div className={styles.content}>
+                        {isYmyl && (
+                            <div className={styles.safetySeal}>
+                                <h4>⚖️ Medical & Science Disclaimer</h4>
+                                <p>
+                                    All nutrition and food science content on Kitchen Algo is for educational purposes only.
+                                    Our "Kitchen Algorithms" are data-driven experiments, not medical advice.
+                                    Please consult with a health professional or registered dietitian for specific dietary needs.
+                                    See our <Link href="/disclaimer">full disclaimer here</Link>.
+                                </p>
+                            </div>
+                        )}
                         {/* Article Content with Auto-Injected Ads */}
                         <ArticleContent
                             htmlContent={contentWithIds || post.content}
@@ -286,13 +339,17 @@ export default async function BlogPost({ params }) {
                     <div className={styles.widget}>
                         <div className={styles.authorWidget}>
                             <div className={styles.authorImg}>
-                                {post.author?.charAt(0) || 'E'}
+                                {post.authorAvatar ? (
+                                    <img src={post.authorAvatar} alt={post.author} />
+                                ) : (
+                                    post.author?.charAt(0) || 'K'
+                                )}
                             </div>
-                            <h3>{post.author || 'Evergreen Team'}</h3>
-                            <p>Expert writer sharing insights on design, technology, and mindful living.</p>
+                            <h3>{post.author || 'Kitchen Algo Team'}</h3>
+                            <p>{post.authorBio}</p>
                             {post.authorSlug && (
                                 <Link href={`/author/${post.authorSlug}`} className={styles.moreBtn}>
-                                    View all posts &rarr;
+                                    View full Lab history &rarr;
                                 </Link>
                             )}
                         </div>

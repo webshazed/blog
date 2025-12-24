@@ -25,8 +25,16 @@
 
 @media (max-width: 500px) {
     .grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .brand {
+        grid-column: 1 / -1;
+    }
+
+    .newsletter {
+        grid-column: 1 / -1;
     }
 }
 
@@ -36,16 +44,15 @@
 }
 
 .logo {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: white;
     display: inline-block;
     margin-bottom: 1rem;
 }
 
-.logo span {
-    color: var(--accent);
+.footerLogoImg {
+    height: 50px;
+    /* Slightly larger in footer */
+    width: auto;
+    display: block;
 }
 
 .tagline {

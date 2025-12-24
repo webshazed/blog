@@ -14,8 +14,8 @@ export async function generateMetadata({ params }) {
     }
 
     return {
-        title: `${author.name} | Authors | Evergreen`,
-        description: author.bio || `Articles by ${author.name}`,
+        title: `${author.name} | Expert Author | Kitchen Algo`,
+        description: author.bio || `Scientific cooking articles and kitchen algorithms by ${author.name}.`,
     };
 }
 
@@ -53,6 +53,9 @@ export default async function AuthorPage({ params, searchParams }) {
                             )}
                         </div>
                         <div className={styles.info}>
+                            <div className={styles.badge}>
+                                <span>🛡️</span> Verified Expert Author
+                            </div>
                             <h1 className={styles.name}>{author.name}</h1>
                             {author.bio && (
                                 <p className={styles.bio}>{author.bio}</p>
@@ -60,17 +63,17 @@ export default async function AuthorPage({ params, searchParams }) {
                             <div className={styles.socials}>
                                 {author.twitter && (
                                     <a href={author.twitter} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                                        Twitter
+                                        𝕏
                                     </a>
                                 )}
                                 {author.linkedin && (
                                     <a href={author.linkedin} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                                        LinkedIn
+                                        in
                                     </a>
                                 )}
                                 {author.website && (
                                     <a href={author.website} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                                        Website
+                                        🔗
                                     </a>
                                 )}
                             </div>

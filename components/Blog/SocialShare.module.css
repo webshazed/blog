@@ -1,0 +1,91 @@
+.shareContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--subtle);
+    letter-spacing: 0.1em;
+}
+
+.buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.shareBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid var(--border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    text-decoration: none;
+    padding: 0;
+}
+
+.shareBtn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.shareBtn:hover {
+    background: var(--hover-color, var(--primary));
+    color: white;
+    border-color: var(--hover-color, var(--primary));
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shareBtn.copied {
+    background: #22c55e;
+    color: white;
+    border-color: #22c55e;
+}
+
+.copyTooltip {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    font-size: 0.75rem;
+    color: #22c55e;
+    font-weight: 700;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .buttons {
+        gap: 0.5rem;
+    }
+
+    .shareBtn {
+        width: 36px;
+        height: 36px;
+    }
+}

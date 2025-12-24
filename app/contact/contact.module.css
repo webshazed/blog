@@ -87,7 +87,7 @@
 .formGroup input:focus,
 .formGroup textarea:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .formGroup textarea {
@@ -97,7 +97,7 @@
 
 .submitBtn {
     padding: 1rem 2rem;
-    background: var(--primary);
+    background: var(--accent);
     color: white;
     border: none;
     border-radius: var(--radius-sm);
@@ -109,7 +109,7 @@
 }
 
 .submitBtn:hover {
-    background: var(--primary-light);
+    background: var(--accent-hover);
 }
 
 /* Info Section */
@@ -151,6 +151,6 @@
 }
 
 .socialLink:hover {
-    background: var(--primary);
+    background: var(--accent);
     color: white;
 }

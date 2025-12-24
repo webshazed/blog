@@ -24,6 +24,10 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: 'kitchenalgo.com',
+            },
+            {
+                protocol: 'https',
                 hostname: '**.unsplash.com',
             },
         ],

@@ -3,18 +3,19 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import styles from './Header.module.css';
+import SearchOverlay from '@/components/Search/SearchOverlay';
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     return (
         <header className={styles.header}>
             <nav className={`${styles.nav} container`}>
                 <Link href="/" className={styles.logo}>
-                    Evergreen<span>.</span>
+                    <img src="/logo.png" alt="Kitchen Algo" className={styles.logoImg} />
                 </Link>
 
-                {/* Desktop Navigation */}
                 <ul className={styles.links}>
                     <li><Link href="/" className={styles.link}>Home</Link></li>
                     <li><Link href="/blog" className={styles.link}>Blog</Link></li>
@@ -23,13 +24,17 @@ export default function Header() {
                 </ul>
 
                 <div className={styles.actions}>
-                    {/* Search Button */}
-                    <Link href="/search" className={styles.searchBtn} aria-label="Search">
+                    {/* Search Button Toggle */}
+                    <button
+                        onClick={() => setIsSearchOpen(true)}
+                        className={styles.searchBtn}
+                        aria-label="Search"
+                    >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="11" cy="11" r="8" />
                             <path d="m21 21-4.35-4.35" />
                         </svg>
-                    </Link>
+                    </button>
 
                     {/* Mobile Menu Button */}
                     <button
@@ -49,10 +54,26 @@ export default function Header() {
                         <li><Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blog</Link></li>
                         <li><Link href="/about" onClick={() => setMobileMenuOpen(false)}>About</Link></li>
                         <li><Link href="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link></li>
-                        <li><Link href="/search" onClick={() => setMobileMenuOpen(false)}>Search</Link></li>
+                        <li>
+                            <button
+                                className={styles.mobileSearchBtn}
+                                onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    setIsSearchOpen(true);
+                                }}
+                            >
+                                Search
+                            </button>
+                        </li>
                     </ul>
                 </div>
             </nav>
+
+            {/* Live Search Overlay */}
+            <SearchOverlay
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+            />
         </header>
     );
 }

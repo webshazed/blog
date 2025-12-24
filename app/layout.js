@@ -1,31 +1,24 @@
 import './globals.css';
-import { Outfit, Merriweather } from 'next/font/google';
+import { Open_Sans } from 'next/font/google';
 import { getSiteSettings } from '@/lib/strapi';
 import TrackingScripts from '@/components/TrackingScripts';
 
-const outfit = Outfit({
+const openSans = Open_Sans({
   subsets: ['latin'],
-  variable: '--font-heading',
+  variable: '--font-open-sans',
   display: 'swap',
 });
 
-const merriweather = Merriweather({
-  weight: ['300', '400', '700', '900'],
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap',
-});
-
-const SITE_URL = process.env.SITE_URL || 'https://blog1-roan.vercel.app';
-const SITE_NAME = process.env.SITE_NAME || 'Evergreen';
+const SITE_URL = process.env.SITE_URL || 'https://kitchenalgo.com';
+const SITE_NAME = process.env.SITE_NAME || 'Kitchen Algo';
 
 export const metadata = {
   title: {
-    default: `${SITE_NAME} | Modern Blog`,
+    default: `${SITE_NAME} | Deciphering the Art of Cooking`,
     template: `%s | ${SITE_NAME}`,
   },
-  description: 'A beautiful, timeless space for thoughts and stories. Discover insightful articles on technology, lifestyle, and more.',
-  keywords: ['blog', 'articles', 'technology', 'lifestyle', 'insights'],
+  description: 'Master the science of the kitchen with data-driven recipes, essential techniques, and algorithm-based cooking guides.',
+  keywords: ['food blog', 'recipes', 'kitchen science', 'cooking techniques', 'kitchen algo'],
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
@@ -41,21 +34,21 @@ export const metadata = {
     locale: 'en_US',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} | Modern Blog`,
-    description: 'A beautiful, timeless space for thoughts and stories.',
+    title: `${SITE_NAME} | Deciphering the Art of Cooking`,
+    description: 'Master the science of the kitchen with data-driven recipes, essential techniques, and algorithm-based cooking guides.',
     images: [
       {
         url: `${SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} Blog`,
+        alt: `${SITE_NAME} - Science of Cooking`,
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${SITE_NAME} | Modern Blog`,
-    description: 'A beautiful, timeless space for thoughts and stories.',
+    title: `${SITE_NAME} | Deciphering the Art of Cooking`,
+    description: 'Master the science of the kitchen with data-driven recipes, essential techniques, and algorithm-based cooking guides.',
     images: [`${SITE_URL}/og-image.png`],
   },
   robots: {
@@ -79,7 +72,7 @@ export default async function RootLayout({ children }) {
   const siteSettings = await getSiteSettings();
 
   return (
-    <html lang="en" className={`${outfit.variable} ${merriweather.variable}`}>
+    <html lang="en" className={openSans.variable}>
       <head>
         {/* Google Search Console Verification */}
         {siteSettings?.googleSearchConsoleCode && (

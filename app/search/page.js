@@ -5,8 +5,8 @@ import { searchPosts } from '@/lib/data';
 import Link from 'next/link';
 
 export const metadata = {
-    title: 'Search | Evergreen',
-    description: 'Search articles on Evergreen blog.',
+    title: 'Search | Kitchen Algo',
+    description: 'Search articles on Kitchen Algo.',
 };
 
 export default async function SearchPage({ searchParams }) {

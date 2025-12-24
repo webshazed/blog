@@ -5,8 +5,8 @@ import { getPostsWithPagination, getCategories } from '@/lib/data';
 import Link from 'next/link';
 
 export const metadata = {
-    title: 'Blog | Evergreen',
-    description: 'Explore our collection of articles on design, technology, and mindful living.',
+    title: 'Blog | Kitchen Algo',
+    description: 'Explore our collection of data-driven recipes, kitchen science articles, and cooking techniques.',
 };
 
 export default async function BlogPage({ searchParams }) {

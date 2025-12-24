@@ -38,12 +38,12 @@
 
 .searchInput:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--accent);
 }
 
 .searchBtn {
     padding: 1rem 2rem;
-    background: var(--primary);
+    background: var(--accent);
     color: white;
     border: none;
     border-radius: var(--radius-sm);
@@ -54,7 +54,7 @@
 }
 
 .searchBtn:hover {
-    background: var(--primary-light);
+    background: var(--accent-hover);
 }
 
 /* Content */
@@ -94,7 +94,7 @@
 .browseLink {
     display: inline-block;
     padding: 0.75rem 1.5rem;
-    background: var(--primary);
+    background: var(--accent);
     color: white;
     border-radius: var(--radius-sm);
     font-weight: 600;
@@ -102,5 +102,5 @@
 }
 
 .browseLink:hover {
-    background: var(--primary-light);
+    background: var(--accent-hover);
 }

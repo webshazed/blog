@@ -1,11 +1,13 @@
 .header {
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 100;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--backdrop-blur));
+    -webkit-backdrop-filter: blur(var(--backdrop-blur));
+    border-bottom: 1px solid var(--glass-border);
     height: var(--header-height);
+    box-shadow: var(--glass-shadow);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav {
@@ -17,15 +19,16 @@
 }
 
 .logo {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
+    display: flex;
+    align-items: center;
     z-index: 101;
 }
 
-.logo span {
-    color: var(--accent);
+.logoImg {
+    height: 40px;
+    /* Adjust based on logo proportions */
+    width: auto;
+    display: block;
 }
 
 /* Desktop Links */
@@ -52,12 +55,12 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--primary);
+    background: var(--accent);
     transition: width 0.2s ease;
 }
 
 .link:hover {
-    color: var(--primary);
+    color: var(--accent);
 }
 
 .link:hover::after {
@@ -80,12 +83,15 @@
     justify-content: center;
     border-radius: 50%;
     color: var(--foreground);
+    border: none;
+    background: none;
+    cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .searchBtn:hover {
     background: var(--secondary);
-    color: var(--primary);
+    color: var(--accent);
 }
 
 /* Mobile Menu Button */
@@ -178,6 +184,25 @@
 }
 
 .mobileLinks li a:hover {
+    color: var(--primary);
+}
+
+.mobileSearchBtn {
+    width: 100%;
+    text-align: left;
+    padding: 1rem 0;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 500;
+    border: none;
+    background: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.mobileSearchBtn:hover {
     color: var(--primary);
 }
 

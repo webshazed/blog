@@ -140,6 +140,11 @@
     overflow: hidden;
 }
 
+.socialLink:hover {
+    background: var(--accent);
+    color: white;
+}
+
 .authorAvatar img {
     width: 100%;
     height: 100%;
@@ -157,8 +162,15 @@
     margin-bottom: 0.75rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-color: var(--accent);
 }
 
 .articleCount {
@@ -197,12 +209,29 @@
 .ctaButton {
     display: inline-block;
     padding: 1rem 2.5rem;
-    background: white;
-    color: var(--primary);
+    background: var(--accent);
+    color: white;
     border-radius: var(--radius-sm);
     font-weight: 600;
     font-family: var(--font-heading);
     transition: transform 0.2s ease;
+}
+
+.submitBtn {
+    padding: 1rem 2rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    align-self: flex-start;
+}
+
+.submitBtn:hover {
+    background: var(--accent-hover);
 }
 
 .ctaButton:hover {

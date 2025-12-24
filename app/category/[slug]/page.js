@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
     }
 
     return {
-        title: `${category.name} | Categories | Evergreen`,
+        title: `${category.name} | Kitchen Algo`,
         description: category.description || `Articles in ${category.name}`,
     };
 }
