@@ -28,6 +28,10 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: 'images.kitchenalgo.com',
+            },
+            {
+                protocol: 'https',
                 hostname: '**.unsplash.com',
             },
         ],
