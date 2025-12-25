@@ -1,6 +1,7 @@
 import { getAllArticles, getAllCategories, getAllAuthors } from '@/lib/strapi';
 
-const BASE_URL = process.env.SITE_URL || 'https://blog1-roan.vercel.app';
+// Remove trailing slash from URL to prevent double slashes
+const BASE_URL = (process.env.SITE_URL || 'https://blog1-roan.vercel.app').replace(/\/$/, '');
 
 /**
  * Fetch ALL articles with pagination
