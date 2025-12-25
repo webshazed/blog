@@ -104,9 +104,19 @@ export default async function BlogPost({ params }) {
     const lowerCategorySlug = post.categorySlug?.toLowerCase() || '';
     const isYmyl = ymylKeywords.some(keyword => lowerCategorySlug.includes(keyword));
 
-    // Recipe Detection for Schema
-    const hasIngredients = post.content?.toLowerCase().includes('ingredients');
-    const hasInstructions = post.content?.toLowerCase().includes('instructions') || post.content?.toLowerCase().includes('directions');
+    // Recipe Detection for Schema - Broader detection for food blog
+    const contentLower = post.content?.toLowerCase() || '';
+    const titleLower = post.title?.toLowerCase() || '';
+    const categoryLower = post.category?.toLowerCase() || '';
+
+    // Check for recipe indicators
+    const hasIngredients = contentLower.includes('ingredients');
+    const hasInstructions = contentLower.includes('instructions') || contentLower.includes('directions') || contentLower.includes('method') || contentLower.includes('steps');
+    const hasRecipeKeywords = /recipe|cook|bake|make|prepare|homemade|how to|guide|tutorial/i.test(titleLower);
+    const isRecipeCategory = /recipe|food|cooking|kitchen|meal|dish|breakfast|lunch|dinner|dessert|snack/i.test(categoryLower);
+
+    // This is a recipe if: (has ingredients OR instructions) OR (title suggests recipe) OR (category is food-related)
+    const isRecipe = (hasIngredients || hasInstructions) || hasRecipeKeywords || isRecipeCategory;
 
     // Extract TOC from H2 and H3 headings
     const headingRegex = /<h([23])[^>]*(?:id="([^"]*)")?[^>]*>([^<]+)<\/h[23]>/gi;
@@ -145,7 +155,7 @@ export default async function BlogPost({ params }) {
 
     // Generate Recipe Schema if applicable (with full Google-recommended fields)
     let recipeSchema = null;
-    if (hasIngredients && hasInstructions) {
+    if (isRecipe) {
         recipeSchema = buildRecipeSchema(post, SITE_URL);
     }
 
