@@ -1,5 +1,6 @@
 import { getPostBySlug, getAllPosts } from '@/lib/data';
 import { getAdSettings } from '@/lib/strapi';
+import { buildRecipeSchema } from '@/lib/recipe-schema';
 import styles from './BlogPost.module.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -142,23 +143,10 @@ export default async function BlogPost({ params }) {
         "timeRequired": `PT${readingTime}M`
     };
 
-    // Generate Recipe Schema if applicable
+    // Generate Recipe Schema if applicable (with full Google-recommended fields)
     let recipeSchema = null;
     if (hasIngredients && hasInstructions) {
-        recipeSchema = {
-            "@context": "https://schema.org",
-            "@type": "Recipe",
-            "name": post.title,
-            "image": post.image ? [post.image] : [],
-            "author": {
-                "@type": "Person",
-                "name": post.author || "Kitchen Algo Team"
-            },
-            "datePublished": post.date ? new Date(post.date).toISOString() : new Date().toISOString(),
-            "description": post.excerpt || post.title,
-            "recipeCategory": post.category || "General",
-            "keywords": "recipe, kitchen algo, cooking"
-        };
+        recipeSchema = buildRecipeSchema(post, SITE_URL);
     }
 
     // Generate Breadcrumb Schema
