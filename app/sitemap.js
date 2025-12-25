@@ -2,6 +2,38 @@ import { getAllArticles, getAllCategories, getAllAuthors } from '@/lib/strapi';
 
 const BASE_URL = process.env.SITE_URL || 'https://blog1-roan.vercel.app';
 
+/**
+ * Fetch ALL articles with pagination
+ * This ensures all articles are included in the sitemap
+ */
+async function fetchAllArticles() {
+    const allArticles = [];
+    let page = 1;
+    const pageSize = 100;
+    let hasMore = true;
+
+    while (hasMore) {
+        try {
+            const result = await getAllArticles(page, pageSize);
+            const articles = result?.articles || [];
+
+            if (articles.length > 0) {
+                allArticles.push(...articles);
+                // If we got less than pageSize, we've reached the end
+                hasMore = articles.length === pageSize;
+                page++;
+            } else {
+                hasMore = false;
+            }
+        } catch (e) {
+            console.error(`Sitemap: Failed to fetch articles page ${page}`, e);
+            hasMore = false;
+        }
+    }
+
+    return allArticles;
+}
+
 export default async function sitemap() {
     // Fetch all data from Strapi
     let articles = [];
@@ -9,8 +41,8 @@ export default async function sitemap() {
     let authors = [];
 
     try {
-        const articlesResult = await getAllArticles(1, 100); // Get up to 100 articles
-        articles = articlesResult?.articles || [];
+        articles = await fetchAllArticles();
+        console.log(`Sitemap: Fetched ${articles.length} articles`);
     } catch (e) {
         console.error('Sitemap: Failed to fetch articles', e);
     }
@@ -60,6 +92,24 @@ export default async function sitemap() {
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.6,
+        },
+        {
+            url: `${BASE_URL}/privacy`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
+        {
+            url: `${BASE_URL}/terms`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
+        {
+            url: `${BASE_URL}/disclaimer`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
         },
     ];
 
