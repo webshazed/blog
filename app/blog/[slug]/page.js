@@ -1,5 +1,4 @@
-import { getPostBySlug, getAllPosts } from '@/lib/data';
-import { getAdSettings } from '@/lib/strapi';
+import { getPostBySlug, getAllPosts, getAllPostsRecursive, getAdSettings } from '@/lib/data';
 import { buildRecipeSchema } from '@/lib/recipe-schema';
 import styles from './BlogPost.module.css';
 import Link from 'next/link';
@@ -24,7 +23,7 @@ function AdSlot({ code, fallback, className, style }) {
     );
 }
 
-const SITE_URL = process.env.SITE_URL || 'https://blog1-roan.vercel.app';
+const SITE_URL = process.env.SITE_URL || 'https://www.kitchenalgo.com';
 
 export async function generateMetadata({ params }) {
     const { slug } = await params;
@@ -40,7 +39,9 @@ export async function generateMetadata({ params }) {
     const imageUrl = post.image || `${SITE_URL}/og-image.png`;
 
     return {
-        title: post.title,
+        title: {
+            absolute: post.title,
+        },
         description: post.excerpt || post.title,
         alternates: {
             canonical: postUrl,
@@ -72,10 +73,13 @@ export async function generateMetadata({ params }) {
 }
 
 export async function generateStaticParams() {
-    const posts = await getAllPosts();
-    return posts.map((post) => ({
-        slug: post.slug,
-    }));
+    const posts = await getAllPostsRecursive();
+    const brokenSlugs = ['cheap-meal-prep-for-weight-loss', 'soft-pretzels-sourdough-discard'];
+    return posts
+        .filter(post => !brokenSlugs.includes(post.slug))
+        .map((post) => ({
+            slug: post.slug,
+        }));
 }
 
 export default async function BlogPost({ params }) {

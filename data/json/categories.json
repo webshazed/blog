@@ -1,0 +1,90 @@
+[
+  {
+    "id": 6,
+    "name": "Beverages",
+    "slug": "Beverages",
+    "description": null,
+    "image": null,
+    "articleCount": 23
+  },
+  {
+    "id": 7,
+    "name": "Breakfast & Brunch",
+    "slug": "Breakfast_Brunch",
+    "description": null,
+    "image": null,
+    "articleCount": 4
+  },
+  {
+    "id": 8,
+    "name": "Budget Friendly",
+    "slug": "Budget_Friendly",
+    "description": null,
+    "image": null,
+    "articleCount": 19
+  },
+  {
+    "id": 9,
+    "name": "Healthy Living",
+    "slug": "Healthy_Living",
+    "description": null,
+    "image": null,
+    "articleCount": 26
+  },
+  {
+    "id": 10,
+    "name": "Kitchen Tips",
+    "slug": "Kitchen_Tips",
+    "description": null,
+    "image": null,
+    "articleCount": 22
+  },
+  {
+    "id": 11,
+    "name": "Tutorial",
+    "slug": "Main_Courses",
+    "description": null,
+    "image": null,
+    "articleCount": 7
+  },
+  {
+    "id": 12,
+    "name": "Pantry & DIY",
+    "slug": "Pantry_DIY",
+    "description": null,
+    "image": null,
+    "articleCount": 16
+  },
+  {
+    "id": 13,
+    "name": "Pet Corner",
+    "slug": "Pet_Corner",
+    "description": null,
+    "image": null,
+    "articleCount": 10
+  },
+  {
+    "id": 14,
+    "name": "World Flavors",
+    "slug": "World_Flavors",
+    "description": null,
+    "image": null,
+    "articleCount": 11
+  },
+  {
+    "id": 16,
+    "name": "Appliance Recipes",
+    "slug": "appliance_recipes",
+    "description": null,
+    "image": null,
+    "articleCount": 20
+  },
+  {
+    "id": 17,
+    "name": "Baking & Sweets",
+    "slug": "baking_and_sweets",
+    "description": null,
+    "image": null,
+    "articleCount": 17
+  }
+]

@@ -1,14 +1,15 @@
-import { getAllArticles } from '@/lib/strapi';
+import { getAllPosts as getAllArticles } from '@/lib/data';
 
-const SITE_URL = process.env.SITE_URL || 'https://blog1-roan.vercel.app';
+const SITE_URL = process.env.SITE_URL || 'https://www.kitchenalgo.com';
 const SITE_NAME = process.env.SITE_NAME || 'Evergreen';
+
+export const dynamic = 'force-static';
 
 export async function GET() {
   let articles = [];
 
   try {
-    const result = await getAllArticles(1, 50);
-    articles = result?.articles || [];
+    articles = await getAllArticles(1, 50);
   } catch (e) {
     console.error('RSS: Failed to fetch articles', e);
   }

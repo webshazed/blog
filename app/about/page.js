@@ -1,5 +1,5 @@
 import styles from './about.module.css';
-import { getAllAuthors } from '@/lib/strapi';
+import { getAuthors as getAllAuthors } from '@/lib/data';
 import Link from 'next/link';
 import Image from 'next/image';
 

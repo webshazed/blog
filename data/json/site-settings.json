@@ -1,0 +1,11 @@
+{
+  "siteName": "My Blog",
+  "siteDescription": "",
+  "googleAnalyticsId": "G-EJS3MSHVNY",
+  "googleSearchConsoleCode": "",
+  "bingVerificationCode": "<meta name=\"msvalidate.01\" content=\"A3E85460727AB7BF2EE615B8D652E25A\" />",
+  "metaPixelId": "",
+  "adsensePublisherId": "",
+  "customHeadCode": "<!-- Google tag (gtag.js) -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-EJS3MSHVNY\"></script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n\n  gtag('config', 'G-EJS3MSHVNY');\n</script>\n<script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8609876070348464\"\n     crossorigin=\"anonymous\"></script>",
+  "customBodyCode": ""
+}

@@ -1,51 +1,21 @@
-import { getAllArticles, getAllCategories, getAllAuthors } from '@/lib/strapi';
+import { getAllPostsRecursive as getAllArticles, getCategories as getAllCategories, getAuthors as getAllAuthors } from '@/lib/data';
 
 // Remove trailing slash from URL to prevent double slashes
-const BASE_URL = (process.env.SITE_URL || 'https://blog1-roan.vercel.app').replace(/\/$/, '');
+const BASE_URL = (process.env.SITE_URL || 'https://www.kitchenalgo.com').replace(/\/$/, '');
 
-/**
- * Fetch ALL articles with pagination
- * This ensures all articles are included in the sitemap
- */
-async function fetchAllArticles() {
-    const allArticles = [];
-    let page = 1;
-    const pageSize = 100;
-    let hasMore = true;
-
-    while (hasMore) {
-        try {
-            const result = await getAllArticles(page, pageSize);
-            const articles = result?.articles || [];
-
-            if (articles.length > 0) {
-                allArticles.push(...articles);
-                // If we got less than pageSize, we've reached the end
-                hasMore = articles.length === pageSize;
-                page++;
-            } else {
-                hasMore = false;
-            }
-        } catch (e) {
-            console.error(`Sitemap: Failed to fetch articles page ${page}`, e);
-            hasMore = false;
-        }
-    }
-
-    return allArticles;
-}
+export const dynamic = 'force-static';
 
 export default async function sitemap() {
-    // Fetch all data from Strapi
+    // Fetch all data from local JSON via lib/data
     let articles = [];
     let categories = [];
     let authors = [];
 
     try {
-        articles = await fetchAllArticles();
-        console.log(`Sitemap: Fetched ${articles.length} articles`);
+        articles = await getAllArticles();
+        console.log(`Sitemap: Loaded ${articles.length} articles`);
     } catch (e) {
-        console.error('Sitemap: Failed to fetch articles', e);
+        console.error('Sitemap: Failed to load articles', e);
     }
 
     try {
@@ -108,6 +78,36 @@ export default async function sitemap() {
         },
         {
             url: `${BASE_URL}/disclaimer`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
+        {
+            url: `${BASE_URL}/accessibility`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
+        {
+            url: `${BASE_URL}/advertising`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
+        {
+            url: `${BASE_URL}/affiliate-disclosure`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
+        {
+            url: `${BASE_URL}/cookies`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
+        {
+            url: `${BASE_URL}/dmca`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.3,

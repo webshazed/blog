@@ -1,0 +1,122 @@
+[
+  {
+    "id": 6,
+    "name": "Alex Flavorcraft",
+    "slug": "Alex-Flavorcraft",
+    "email": "3shazed.uk@gmail.com",
+    "bio": "Alex-Flavorcraft here! I’m a culinary innovator who loves blurring the lines between cuisines. Known for my bold Kimchi Burgers and Butter Chicken Pizza, I bring a fun, fusion twist to your weekend dinners and creative baking projects.",
+    "avatar": "https://images.kitchenalgo.com/Alex%20Flavorcraft.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 12
+  },
+  {
+    "id": 9,
+    "name": "Ava Kitchenfield",
+    "slug": "Ava-Kitchenfield",
+    "email": "6shazed.uk@gmail.com",
+    "bio": "Ava-Kitchenfield here, bridging the gap between viral food trends and nutritional science. I love high-protein snacks and plant-forward meals, and I test the latest \"health hacks\" (like cottage cheese ice cream) to see if they are actually worth the hype.",
+    "avatar": "https://images.kitchenalgo.com/Ava%20Kitchenfield.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 27
+  },
+  {
+    "id": 14,
+    "name": "Daniel Cooksmith",
+    "slug": "Daniel-Cooksmith",
+    "email": "11shazed.uk@gmail.com",
+    "bio": "I’m a culinary technique specialist focused on the \"how\" and \"why\" of cooking. From seasoning cast iron to the science of food storage, I’m here to help you master the fundamentals for professional-level results at home.",
+    "avatar": "https://images.kitchenalgo.com/Daniel%20Cooksmith.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 23
+  },
+  {
+    "id": 8,
+    "name": "Ella Morningtable",
+    "slug": "Ella-Morningtable",
+    "email": "5shazed.uk@gmail.com",
+    "bio": "Ella-Morningtable here, the queen of the morning ritual. I specialize in small-batch breakfasts, helping you start the day with fluffy pancakes for two, microwave mug omelets, and perfectly portioned French toast.",
+    "avatar": "https://images.kitchenalgo.com/Ella%20Morningtable.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 4
+  },
+  {
+    "id": 20,
+    "name": "Kevin HomeChef",
+    "slug": "kevin-homechef",
+    "email": "kevin-homechef-1765809046013@example.com",
+    "bio": "Kevin-HomeChef here! I’m the resident appliance geek at Kitchen Algo. I’m obsessed with making modern technology delicious, whether I'm testing Air Fryer hacks or perfecting Instant Pot meals. My goal is to help you cook faster, crispier, and smarter.",
+    "avatar": "https://images.kitchenalgo.com/Kevin%20HomeChef.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 21
+  },
+  {
+    "id": 21,
+    "name": "Liam Dougherty",
+    "slug": "liam-dougherty",
+    "email": "liam-dougherty-1765824830712@example.com",
+    "bio": "Hi, I’m Liam-Dougherty, a baker and sourdough specialist with a passion for wild yeast. Whether you are nurturing your first starter or looking for creative sourdough discard recipes, I’m here to simplify the art of artisan baking for your home kitchen.",
+    "avatar": "https://images.kitchenalgo.com/Liam%20Dougherty.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 18
+  },
+  {
+    "id": 17,
+    "name": "Milo PetBowl",
+    "slug": "Milo-PetBowl",
+    "email": "14shazed.uk@gmail.com",
+    "bio": "I’m Milo-PetBowl, your dedicated pet nutrition enthusiast! I create safe, homemade recipes for dogs and cats. From allergy-friendly dog food to no-bake pumpkin treats, I help pet parents ditch processed fillers for wholesome, real ingredients.",
+    "avatar": "https://images.kitchenalgo.com/Milo%20PetBowl.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 10
+  },
+  {
+    "id": 16,
+    "name": "Nora Cultiva",
+    "slug": "Nora-Cultiva",
+    "email": "13shazed.uk@gmail.com",
+    "bio": "I’m a fermentation specialist and urban homesteader. I love turning simple scraps into culinary gold, teaching you how to make apple scrap vinegar, probiotic coconut yogurt, and hot honey right on your kitchen counter.",
+    "avatar": "https://images.kitchenalgo.com/Nora%20Cultiva.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 16
+  },
+  {
+    "id": 25,
+    "name": "Oliver-Brewwell",
+    "slug": "oliver-brewwell",
+    "email": "oliver-brewwell-1766135315196@example.com",
+    "bio": "Hello! I’m Oliver-Brewwell, the beverage enthusiast and creator behind the drinks here at Kitchen Algo. My journey began with a simple curiosity about homemade cold brew concentrate, which quickly spiraled into a decade-long obsession with liquid culture.",
+    "avatar": "https://images.kitchenalgo.com/Oliver-Brewwell.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 23
+  },
+  {
+    "id": 27,
+    "name": "Sarah-Pennywise",
+    "slug": "sarah-pennywise",
+    "email": "sarah-pennywise-1766146202965@example.com",
+    "bio": "Sarah-Pennywise here! I’m a budget-cooking expert committed to proving that healthy food doesn't have to be expensive. I specialize in $10 family meals, smart meal prep, and turning pantry staples like canned tuna into gourmet dinners.",
+    "avatar": "https://images.kitchenalgo.com/Sarah-Pennywise.webp",
+    "twitter": null,
+    "linkedin": null,
+    "website": null,
+    "articleCount": 21
+  }
+]

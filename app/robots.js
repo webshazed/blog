@@ -1,4 +1,8 @@
-const BASE_URL = process.env.SITE_URL || 'https://blog1-roan.vercel.app';
+const BASE_URL = process.env.SITE_URL || 'https://www.kitchenalgo.com';
+
+
+
+export const dynamic = 'force-static';
 
 export default function robots() {
     return {

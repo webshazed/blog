@@ -9,9 +9,8 @@ export const metadata = {
     description: 'Explore our collection of data-driven recipes, kitchen science articles, and cooking techniques.',
 };
 
-export default async function BlogPage({ searchParams }) {
-    const params = await searchParams;
-    const page = parseInt(params?.page) || 1;
+export default async function BlogPage() {
+    const page = 1; // Static build limitation: only first page is generated
     const { articles: posts, pagination } = await getPostsWithPagination(page, 9);
     const categories = await getCategories();
 

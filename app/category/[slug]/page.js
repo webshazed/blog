@@ -25,10 +25,9 @@ export async function generateStaticParams() {
     }));
 }
 
-export default async function CategoryPage({ params, searchParams }) {
+export default async function CategoryPage({ params }) {
     const { slug } = await params;
-    const sp = await searchParams;
-    const page = parseInt(sp?.page) || 1;
+    const page = 1; // Static build limitation: only first page is generated
 
     const category = await getCategory(slug);
 

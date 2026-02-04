@@ -26,10 +26,9 @@ export async function generateStaticParams() {
     }));
 }
 
-export default async function AuthorPage({ params, searchParams }) {
+export default async function AuthorPage({ params }) {
     const { slug } = await params;
-    const sp = await searchParams;
-    const page = parseInt(sp?.page) || 1;
+    const page = 1; // Static build limitation: only first page is generated
 
     const author = await getAuthor(slug);
 
