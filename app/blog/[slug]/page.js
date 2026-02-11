@@ -291,7 +291,7 @@ export default async function BlogPost({ params }) {
                         />
                     )}
 
-                    {post.image && (
+                    {post.image && !post.hideFeaturedImage && (
                         <div className={styles.imageContainer}>
                             <img src={post.image} alt={post.title} className={styles.image} />
                         </div>
@@ -358,11 +358,13 @@ export default async function BlogPost({ params }) {
                     </div>
 
                     {/* Sticky Ad Mock */}
-                    <div className={styles.widget}>
-                        <div className={styles.adSlot} style={{ minHeight: '300px', margin: 0 }}>
-                            AdSense (Sidebar Sticky)
+                    {post.enableAds !== false && (
+                        <div className={styles.widget}>
+                            <div className={styles.adSlot} style={{ minHeight: '300px', margin: 0 }}>
+                                AdSense (Sidebar Sticky)
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Recent Posts */}
                     <div className={styles.widget}>

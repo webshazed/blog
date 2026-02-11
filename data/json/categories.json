@@ -86,5 +86,13 @@
     "description": null,
     "image": null,
     "articleCount": 17
+  },
+  {
+    "id": 18,
+    "name": "Reviews",
+    "slug": "reviews",
+    "description": "Product reviews and buying guides.",
+    "image": null,
+    "articleCount": 80
   }
 ]
